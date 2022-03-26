@@ -47,6 +47,43 @@ void resched(void) // assumes interrupts are disabled
 	// Context switch to next ready process
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
+	if (AGING)
+	{
+		printqueue(readyqueue);
+		age(readyqueue);
+		printqueue(readyqueue);
+	}
 	// Old process returns here when resumed
 	return;
+}
+/**
+ * @brief each process in the ready q will have its priority increased by 1,
+ * and the lowest priority prc will be multiplied by 2
+ *
+ * @param q
+ */
+void age(struct queue *q)
+{
+
+	struct qentry *t = q->tail->prev;
+	if (isempty(q))
+	{
+		return;
+	}
+	if (t->pid != 0 && t != NULL)
+	{
+		// kprintf("pid to be removed: %d\n", t->pid);
+		// printqueue(q);
+		// kprintf("STARTING priority: %d\n", t->priority);
+		// kprintf("starting\n");
+		pri16 p = t->priority + 1;
+		// kprintf("priority\n");
+		pid32 pid = remove(t->pid, q);
+		// kprintf("removed\n");
+		// kprintf("pid to be removed: %d\n", pid);
+		// printqueue(q);
+		// kprintf("new priority: %d\n", p);
+		enqueue(pid, q, p);
+		// kprintf("enqueued\n");
+	}
 }
