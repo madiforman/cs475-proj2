@@ -50,7 +50,7 @@ pid32 create(void *procaddr, uint32 ssize, pri16 priority, char *name, uint32 na
 	prptr->prhasmsg = FALSE;
 
 	prptr->prprio = priority;
-	printf("in create(): %d\n", priority);
+	//	printf("in create(): %d\n", priority);
 
 	// set up initial device descriptors for the shell
 	prptr->prdesc[0] = CONSOLE; // stdin  is CONSOLE device
