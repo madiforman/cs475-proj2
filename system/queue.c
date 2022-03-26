@@ -270,5 +270,6 @@ pid32 remove(pid32 pid, struct queue *q)
 	}
 
 	// TODO - if pid does not exist in the queue, return SYSERR
+	kprintf("REMOVE FAILED\n");
 	return SYSERR;
 }
