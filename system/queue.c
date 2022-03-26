@@ -69,103 +69,56 @@ pid32 enqueue(pid32 pid, struct queue *q, int32 key)
 	{
 		return SYSERR;
 	}
-
-	// TODO - allocate space on heap for a new qentry
+	/*allocate space on heap for a new qentry*/
 	struct qentry *newEntry = (struct qentry *)malloc(sizeof(struct qentry));
 
-	// TODO - initialize the new QEntry
+	/*initialize new entry*/
 	newEntry->pid = pid;
-	newEntry->next = NULL;
 	newEntry->priority = key;
 
-	if (isempty(q))
+	/*edge cases*/
+	if (isempty(q)) /*if q is empty*/
 	{
+		newEntry->prev = NULL;
+		newEntry->next = NULL;
 		q->head = newEntry;
 		q->tail = newEntry;
-		newEntry->prev = NULL;
 	}
-	else
+	else if (q->tail->priority > newEntry->priority) /*else if new entry should be placed at tail*/
 	{
-		struct qentry *temp = q->head;
-		if (temp->priority < newEntry->priority)
-		{
-			q->head = newEntry;
-			newEntry->next = temp;
-			temp->prev = newEntry;
-		}
-		if (q->tail->priority > newEntry->priority)
-		{
-			newEntry->prev = q->tail;
-			q->tail->next = newEntry;
-			q->tail = newEntry;
-		}
-		else
-		{
-			while (temp->next != NULL)
-			{
-				if (temp->priority < newEntry->priority)
-				{
+		newEntry->next = NULL;
+		newEntry->prev = q->tail;
 
-					break;
-				}
-				temp = temp->next;
+		q->tail->next = newEntry;
+		q->tail = newEntry;
+	}
+	else if (q->head->priority < newEntry->priority) /* else if new entry should be placed at head*/
+	{
+		newEntry->next = q->head;
+		newEntry->prev = q->head->prev;
+
+		q->head->prev = newEntry;
+		q->head = newEntry;
+	}
+	else /*else general priority q algorithm*/
+	{
+		struct qentry *current = q->head;
+		while (current != NULL)
+		{
+			if (newEntry->priority > current->priority)
+			{ /*set new entry to point at current and current's previous*/
+				newEntry->next = current;
+				newEntry->prev = current->prev;
+
+				current->prev = newEntry;
+				current->prev->prev->next = newEntry;
+				break;
 			}
+			current = current->next;
 		}
 	}
 	q->size++;
-	return newEntry->pid;
-	// kprintf("79: %d\n", newEntry->priority);
-	//  newEntry->prev = q->tail;
-
-	//  TODO - insert into tail of queue
-
-	// struct quentry *temp = q->head;
-
-	// // link the new entry to the last queue entry
-	// struct qentry *tailEntry = q->tail; // and this
-	// if (tailEntry != NULL)
-	// {
-	// 	tailEntry->next = newEntry;
-	// }
-
-	// if (isempty(q))
-	// {
-	// 	q->head = newEntry;
-	// 	q->tail = newEntry;
-	// 	q->size++;
-	// 	kprintf("head: pid: %d, priority: %d\n", q->head->pid, q->head->priority);
-	// 	printqueue(q);
-	// 	return pid;
-	// }
-	// else
-	// {
-	// 	struct qentry *temp = q->head;
-	// 	int i;
-	// 	if (q->head->priority < newEntry->priority)
-	// 	{
-	// 		q->head = newEntry;
-	// 		newEntry->next = temp;
-	// 		q->size++;
-	// 		kprintf("113: %d\n", q->head->pid);
-	// 		return pid;
-	// 	}
-	// 	while (temp->next != NULL)
-	// 	{
-	// 		if (temp->priority < newEntry->priority)
-	// 		{
-	// 			newEntry->prev = temp->prev;
-	// 			newEntry->next = temp;
-
-	// 			temp->prev = newEntry;
-
-	// 			q->size++;
-	// 			return pid;
-	// 		}
-	// 		temp = temp->next;
-	// 	}
-	// }
-	// q->size++;
-	/// return pid;
+	return pid;
 }
 
 /**
