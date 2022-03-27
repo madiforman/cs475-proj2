@@ -51,7 +51,7 @@ void resched(void) // assumes interrupts are disabled
 	{
 		printqueue(readyqueue);
 		age(readyqueue);
-		printqueue(readyqueue);
+		// printqueue(readyqueue);
 	}
 	// Old process returns here when resumed
 	return;
@@ -64,26 +64,14 @@ void resched(void) // assumes interrupts are disabled
  */
 void age(struct queue *q)
 {
+	struct qentry *current = q->head;
+	while (current != q->tail)
+	{
+		struct qentry *temp = current;
+		temp->priority++;
+		kprintf("%d\n", temp->priority);
+		// enqueue(p, q, temp->priority);
 
-	struct qentry *t = q->tail->prev;
-	if (isempty(q))
-	{
-		return;
-	}
-	if (t->pid != 0 && t != NULL)
-	{
-		// kprintf("pid to be removed: %d\n", t->pid);
-		// printqueue(q);
-		// kprintf("STARTING priority: %d\n", t->priority);
-		// kprintf("starting\n");
-		pri16 p = t->priority + 1;
-		// kprintf("priority\n");
-		pid32 pid = remove(t->pid, q);
-		// kprintf("removed\n");
-		// kprintf("pid to be removed: %d\n", pid);
-		// printqueue(q);
-		// kprintf("new priority: %d\n", p);
-		enqueue(pid, q, p);
-		// kprintf("enqueued\n");
+		current = current->next;
 	}
 }
