@@ -1,11 +1,6 @@
 # cs475-proj2
 
-Name : Xinu Project 2
-Authors : Clark Brace && Madison Sanchez-Forman
-Version : 3.27.22
-Description : Implements a priority queue for process scheduling. If
-AGING in kernel.h is set to TRUE it will also implement an aging policy
-to prevent starvation.
+Name : Xinu Project 2 || Authors : Clark Brace && Madison Sanchez-Forman || Version : 3.27.22
 
 https://davidtchiu.github.io/teaching/cs475/proj2/
 
