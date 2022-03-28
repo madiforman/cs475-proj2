@@ -46,10 +46,10 @@ void resched(void) // assumes interrupts are disabled
 
 	// Context switch to next ready process
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
-
-	if (AGING)
+	// printqueue(readyqueue);
+	if (AGING == TRUE)
 	{
-		printqueue(readyqueue);
+		// printqueue(readyqueue);
 		age(readyqueue);
 		// printqueue(readyqueue);
 	}
@@ -57,21 +57,26 @@ void resched(void) // assumes interrupts are disabled
 	return;
 }
 /**
- * @brief each process in the ready q will have its priority increased by 1,
- * and the lowest priority prc will be multiplied by 2
+ * @brief each process in the ready q will have multiplied by 2 except for the
+ * null process, can handle negative and positive priorities
  *
- * @param q
+ * @param q ready queue
  */
 void age(struct queue *q)
 {
 	struct qentry *current = q->head;
-	while (current != q->tail)
+	while (current != NULL)
 	{
-		struct qentry *temp = current;
-		temp->priority++;
-		kprintf("%d\n", temp->priority);
-		// enqueue(p, q, temp->priority);
+		if (current->pid == 0)
+		{
+			current = current->next; /*skip null proc*/
+		}
+		else
+		{
+			struct qentry *temp = current;
+			temp->priority = abs(2 * temp->priority); /*abs val to increase priority of negative and positive processes*/
 
-		current = current->next;
+			current = current->next;
+		}
 	}
 }
